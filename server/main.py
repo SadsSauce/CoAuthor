@@ -1,35 +1,16 @@
 from fastapi import FastAPI
+from routes import rooms, chat, auth, mindmaps, gamification, version_control, export
 
 app = FastAPI()
+
+app.include_router(rooms.router)
+app.include_router(chat.router)
+app.include_router(auth.router)
+app.include_router(mindmaps.router)
+app.include_router(gamification.router)
+app.include_router(version_control.router)
+app.include_router(export.router)
 
 @app.get("/")
 def home():
     return {"message": "Welcome to CoAuthor backend!"}
-
-@app.get("/stories")
-def get_stories():
-    return {"stories": ["Story 1", "Story 2", "Story 3"]}
-
-@app.get("/rooms")
-def get_rooms():
-    return {"rooms": ["Fantasy", "Sci-Fi", "Romance"]}
-
-@app.get("/Sign in/Sign up")
-def get_users():
-    return {"Sign in/Sign up area": "User authentication endpoint"}
-
-@app.get("Mind Maps")
-def get_mind_maps():
-    return {"Mind Maps": "Mind map data endpoint"}
-
-@app.get("Live Chat/Voice Chat")    
-def get_chat():
-    return {"Live Chat/Voice Chat": "Chat and voice communication endpoint"}
-
-@app.get("Gamification/Rewards/Achievements/Quests/Leaderboards")
-def get_gamification():
-    return {"Gamification/Rewards/Achievements/Quests/Leaderboards": "Gamification features endpoint"}
-
-@app.get("Version Control/History/Undo/Redo")
-def get_version_control():
-    return {"Version Control/History/Undo/Redo": "Version control features endpoint"}
