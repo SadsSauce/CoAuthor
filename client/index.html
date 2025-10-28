@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoAuthor</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>🖋️ CoAuthor</h1>
+    <input type="text" id="searchInput" placeholder="Search rooms...">
+    <button id="createRoomBtn">+ Create Room</button>
+  </header>
+
+  <main>
+    <table id="roomTable">
+      <thead>
+        <tr>
+          <th>Room</th>
+          <th>Members</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </main>
+
+  <div id="createRoomModal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <h2>Create New Room</h2>
+      <input type="text" id="newRoomName" placeholder="Enter room name...">
+      <button id="confirmCreateRoom">Create</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 CoAuthor • Collaborate. Create. Inspire.</p>
+  </footer>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

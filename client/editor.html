@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoAuthor Editor</title>
+  <link rel="stylesheet" href="/static/editor.css">
+</head>
+<body>
+
+  <header>
+    <h2 id="roomTitle">Room Name</h2>
+    <div class="toolbar">
+      <button id="saveBtn">💾 Save</button>
+      <button id="exportBtn">⬇ Export PDF</button>
+      <a href="/" class="backBtn">← Back to Rooms</a>
+    </div>
+  </header>
+
+  <main>
+    <div id="editorArea" class="editor-section">
+      <textarea id="textEditor" placeholder="Start writing your story here..."></textarea>
+    </div>
+
+    <aside id="sidebar" class="chat-section">
+      <h3>Voice Chat</h3>
+      <button id="joinVoice">🎙 Join</button>
+      <div id="voiceStatus">Not connected</div>
+
+      <h3>Chat</h3>
+      <div id="chatBox"></div>
+      <input type="text" id="chatInput" placeholder="Type a message and press Enter...">
+    </aside>
+  </main>
+
+  <script src="/static/editor.js" defer></script>
+</body>
+</html>
