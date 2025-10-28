@@ -13,18 +13,45 @@ header {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  height: 70px;
 }
 
-h1 {
+header h1 {
   margin: 0;
   font-weight: 600;
+  font-size: 24px;
 }
 
 #searchInput {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
   padding: 8px 12px;
   border-radius: 5px;
   border: none;
   outline: none;
+}
+
+#headerButtons {
+  display: flex;
+  gap: 10px;
+}
+
+#headerButtons button {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+#headerButtons button:hover {
+  background-color: #5c6bc0;
 }
 
 #createRoomBtn {
@@ -93,7 +120,7 @@ footer {
 }
 
 .modal {
-  display: none; 
+  display: none;
   position: fixed;
   z-index: 1000;
   left: 0;
@@ -124,14 +151,16 @@ footer {
   cursor: pointer;
 }
 
-#newRoomName {
+#newRoomName, #loginContainer input {
   width: 80%;
   padding: 10px;
   margin: 15px 0;
   font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
-#confirmCreateRoom {
+#confirmCreateRoom, #loginContainer button {
   background-color: #3f51b5;
   color: white;
   border: none;
@@ -139,8 +168,19 @@ footer {
   font-size: 15px;
   border-radius: 5px;
   cursor: pointer;
+  margin: 5px 0;
 }
 
-#confirmCreateRoom:hover {
+#confirmCreateRoom:hover, #loginContainer button:hover {
   background-color: #5c6bc0;
+}
+
+#loginContainer {
+  width: 300px;
+  margin: 50px auto;
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  text-align: center;
 }

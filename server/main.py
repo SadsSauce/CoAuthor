@@ -14,10 +14,10 @@ app.include_router(gamification.router)
 app.include_router(version_control.router)
 app.include_router(export.router)
 
-BASE_DIR = Path(__file__).resolve().parent.parent  
+BASE_DIR = Path(__file__).resolve().parent.parent
 CLIENT_DIR = BASE_DIR / "client"
 
-app.mount("/static", StaticFiles(directory=CLIENT_DIR), name="static")
+app.mount("/static", StaticFiles(directory=CLIENT_DIR / "static"), name="static")
 
 @app.get("/")
 def home():
