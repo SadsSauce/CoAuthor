@@ -1,0 +1,405 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f5f5f9;
+  color: #222;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background-color: #303f9f;
+  color: white;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-link {
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.logo-link:hover {
+  opacity: 0.9;
+}
+
+.breadcrumb {
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb a {
+  color: white;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.breadcrumb a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.breadcrumb .separator {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+  font-size: 14px;
+}
+
+.breadcrumb #currentGenre {
+  font-weight: 600;
+}
+
+#headerButtons {
+  display: flex;
+  gap: 15px;
+}
+
+#headerButtons button {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s;
+}
+
+#headerButtons button:hover {
+  background-color: #5c6bc0;
+}
+
+main {
+  flex: 1;
+  padding: 30px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.tab-btn {
+  background: white;
+  border: 2px solid #ddd;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.3s;
+}
+
+.tab-btn:hover {
+  border-color: #3f51b5;
+  color: #3f51b5;
+}
+
+.tab-btn.active {
+  background-color: #3f51b5;
+  color: white;
+  border-color: #3f51b5;
+}
+
+.sort-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-dropdown label {
+  font-weight: 600;
+  color: #555;
+}
+
+.sort-dropdown select {
+  padding: 8px 15px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  background: white;
+}
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+.room-card {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.room-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.room-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 15px;
+}
+
+.room-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #303f9f;
+  margin: 0;
+  flex: 1;
+}
+
+.room-privacy {
+  background: #f0f0f0;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+.room-description {
+  color: #666;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.room-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #888;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.room-creator {
+  color: #555;
+}
+
+.room-members {
+  font-weight: 600;
+  color: #3f51b5;
+}
+
+.room-time {
+  font-size: 13px;
+  color: #999;
+}
+
+.join-btn {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.join-btn:hover {
+  background-color: #5c6bc0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888;
+}
+
+.empty-state p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.empty-state button {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 30px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+footer {
+  background-color: #303f9f;
+  color: white;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  margin-top: auto;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 30px;
+  border-radius: 10px;
+  width: 500px;
+  max-width: 90%;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+  margin-bottom: 25px;
+  color: #303f9f;
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #888;
+}
+
+.close:hover {
+  color: #333;
+}
+
+#createRoomForm input,
+#createRoomForm textarea,
+#createRoomForm select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 2px solid #ddd;
+  outline: none;
+  font-family: inherit;
+}
+
+#createRoomForm input:focus,
+#createRoomForm textarea:focus,
+#createRoomForm select:focus {
+  border-color: #3f51b5;
+}
+
+#createRoomForm textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.privacy-options {
+  margin: 15px 0;
+  display: flex;
+  gap: 20px;
+}
+
+.privacy-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.privacy-options input[type="radio"] {
+  width: auto;
+  margin: 0;
+}
+
+#confirmCreateRoom {
+  width: 100%;
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.2s;
+}
+
+#confirmCreateRoom:hover {
+  background-color: #5c6bc0;
+}
+
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-tabs {
+    justify-content: center;
+  }
+
+  .rooms-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

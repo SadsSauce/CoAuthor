@@ -137,9 +137,22 @@ footer {
   padding: 30px;
   border-radius: 8px;
   width: 400px;
+  max-width: 90%;
   text-align: center;
   position: relative;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  color: #303f9f;
+}
+
+.modal-content h3 {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 16px;
 }
 
 .close {
@@ -151,16 +164,17 @@ footer {
   cursor: pointer;
 }
 
-#newRoomName, #loginContainer input {
+#newRoomName, #loginContainer input, #loginModal input {
   width: 80%;
   padding: 10px;
   margin: 15px 0;
   font-size: 16px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  outline: none;
 }
 
-#confirmCreateRoom, #loginContainer button {
+#confirmCreateRoom, #loginContainer button, #loginModal button {
   background-color: #3f51b5;
   color: white;
   border: none;
@@ -169,9 +183,10 @@ footer {
   border-radius: 5px;
   cursor: pointer;
   margin: 5px 0;
+  transition: background-color 0.2s;
 }
 
-#confirmCreateRoom:hover, #loginContainer button:hover {
+#confirmCreateRoom:hover, #loginContainer button:hover, #loginModal button:hover {
   background-color: #5c6bc0;
 }
 

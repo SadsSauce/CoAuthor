@@ -23,13 +23,87 @@ header {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo-link {
+  font-size: 28px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.logo-link:hover {
+  opacity: 0.8;
+}
+
 header h2 {
   font-size: 20px;
+  margin: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.active-users {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 15px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.user-avatar:hover {
+  transform: scale(1.1);
+}
+
+.user-avatar::after {
+  content: attr(data-username);
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 1000;
+}
+
+.user-avatar:hover::after {
+  opacity: 1;
 }
 
 .toolbar button,
 .toolbar a.backBtn {
-  margin-left: 10px;
+  margin-left: 0;
   background-color: #3f51b5;
   border: none;
   color: white;
@@ -73,6 +147,42 @@ main {
   line-height: 1.6;
   background-color: white;
   outline: none;
+  position: relative;
+}
+
+.remote-cursor {
+  position: absolute;
+  width: 2px;
+  height: 20px;
+  pointer-events: none;
+  z-index: 100;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.remote-cursor-label {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  background-color: inherit;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  white-space: nowrap;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.remote-selection {
+  position: absolute;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.3;
 }
 
 #sidebar {

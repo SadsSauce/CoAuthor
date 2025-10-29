@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoAuthor - Choose Your Genre</title>
+  <link rel="stylesheet" href="/static/genres.css">
+</head>
+<body>
+  <header>
+    <a href="/genres" class="logo-link">
+      <h1>🖋️ CoAuthor</h1>
+    </a>
+    <div id="headerButtons">
+      <button id="myRoomsBtn">My Stories</button>
+      <button id="loginBtn">Login</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="welcome-section">
+      <h2>Welcome to CoAuthor</h2>
+      <p>Choose a genre to start your collaborative storytelling journey</p>
+    </div>
+
+    <div id="genresContainer" class="genres-grid">
+      <!-- Genre cards will be loaded here -->
+    </div>
+  </main>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span id="closeLoginModal" class="close">&times;</span>
+      <h2>Login</h2>
+      <input type="text" id="loginUsername" placeholder="Username">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button id="loginSubmitBtn">Login</button>
+      <h3>Or create a new account</h3>
+      <input type="text" id="newUsername" placeholder="New Username">
+      <input type="password" id="newPassword" placeholder="Password">
+      <button id="createAccountSubmitBtn">Create Account</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 CoAuthor • Collaborate. Create. Inspire.</p>
+  </footer>
+
+  <script src="/static/genres.js" defer></script>
+</body>
+</html>
+
