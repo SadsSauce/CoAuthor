@@ -117,6 +117,7 @@ class ConnectionManager:
             changes = message.get("changes", {})
             
             # Save to database
+            # Save document (don't create a version on every text update)
             save_document(room_name, content)
             
             # Update room activity
@@ -129,6 +130,25 @@ class ConnectionManager:
                 "content": content,
                 "changes": changes
             }, exclude_user=username)
+        elif msg_type == "save_version":
+            # Explicit request to create a version snapshot (e.g. user pressed "Save version")
+            content = message.get("content")
+            summary = message.get("summary")
+            # If content not provided, use current document
+            if content is None:
+                doc = get_document(room_name) or {"content": "", "yjs_state": None}
+                content = doc.get("content", "")
+
+            # Create a version entry and persist current content
+            save_document(room_name, content, create_version=True, author=username, summary=summary)
+
+            # Notify room about new version
+            await self.broadcast_to_room(room_name, {
+                "type": "version_saved",
+                "username": username,
+                "summary": summary,
+                "message": f"Version saved by {username}"
+            })
         
         elif msg_type == "cursor_update":
             # Update cursor position in awareness

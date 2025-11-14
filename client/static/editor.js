@@ -19,6 +19,8 @@ const voiceStatus = document.getElementById("voiceStatus");
 const saveBtn = document.getElementById("saveBtn");
 const exportBtn = document.getElementById("exportBtn");
 const activeUsersContainer = document.getElementById("activeUsers");
+const versionsBtn = document.getElementById("versionsBtn");
+const versionsModal = document.getElementById("versionsModal");
 
 // WebSocket connection
 let ws = null;
@@ -226,10 +228,141 @@ if (joinVoice && voiceStatus) {
 // Save button
 if (saveBtn && textEditor) {
   saveBtn.addEventListener("click", () => {
-    // Already auto-saved via WebSocket, but provide user feedback
-    alert("Document is automatically saved to the server!");
+    // Trigger an explicit version save via WebSocket
+    if (isConnected) {
+      ws.send(JSON.stringify({
+        type: 'save_version',
+        content: textEditor.value,
+        summary: 'Manual save'
+      }));
+      alert('Version saved (manual).');
+    } else {
+      alert('Not connected to server. Save will be attempted when connection is restored.');
+    }
   });
 }
+
+// Versions UI: fetch & display recent versions and allow preview/restore
+async function fetchVersions() {
+  try {
+    const resp = await fetch(`/version_control/${encodeURIComponent(roomId)}/versions`);
+    if (!resp.ok) throw new Error('Failed to fetch versions');
+    const data = await resp.json();
+    return data.versions || [];
+  } catch (err) {
+    console.error('Error fetching versions:', err);
+    return [];
+  }
+}
+
+function closeVersionsModal() {
+  if (!versionsModal) return;
+  versionsModal.innerHTML = '';
+  versionsModal.style.display = 'none';
+  versionsModal.setAttribute('aria-hidden', 'true');
+}
+
+async function openVersionsModal() {
+  if (!versionsModal) return;
+  versionsModal.style.display = 'block';
+  versionsModal.setAttribute('aria-hidden', 'false');
+  versionsModal.innerHTML = `<div class="versions-panel">
+    <div class="versions-header">
+      <h3>Version History</h3>
+      <button id="closeVersionsBtn">Close</button>
+    </div>
+    <div id="versionsList" class="versions-list">Loading versions...</div>
+    <div id="versionsPreview" class="versions-preview" style="display:none"></div>
+  </div>`;
+
+  document.getElementById('closeVersionsBtn').addEventListener('click', closeVersionsModal);
+
+  const listContainer = document.getElementById('versionsList');
+  const versions = await fetchVersions();
+  if (!versions.length) {
+    listContainer.innerHTML = '<div class="empty">No versions yet.</div>';
+    return;
+  }
+
+  listContainer.innerHTML = '';
+  versions.forEach(v => {
+    const item = document.createElement('div');
+    item.className = 'version-item';
+    item.innerHTML = `
+      <div class="meta"><strong>v${v.id}</strong> — ${v.author || 'unknown'} — ${v.created_at}</div>
+      <div class="summary">${v.summary || ''}</div>
+      <div class="actions">
+        <button class="preview-btn" data-id="${v.id}">Preview</button>
+        <button class="restore-btn" data-id="${v.id}">Restore</button>
+      </div>`;
+    listContainer.appendChild(item);
+  });
+
+  // wire preview & restore
+  listContainer.querySelectorAll('.preview-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      const preview = document.getElementById('versionsPreview');
+      preview.style.display = 'block';
+      preview.innerHTML = '<div class="loading">Loading preview...</div>';
+      try {
+        const resp = await fetch(`/version_control/${encodeURIComponent(roomId)}/versions/${id}`);
+        if (!resp.ok) throw new Error('Preview failed');
+        const data = await resp.json();
+        preview.innerHTML = `<h4>Preview v${data.version.id}</h4><textarea readonly class="preview-text">${(data.version.content || '')}</textarea>`;
+      } catch (err) {
+        preview.innerHTML = '<div class="error">Failed to load preview</div>';
+      }
+    });
+  });
+
+  listContainer.querySelectorAll('.restore-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      if (!confirm(`Are you sure you want to revert to version ${id}? This will create a new snapshot.`)) return;
+      try {
+        const resp = await fetch(`/version_control/versions/${id}/revert?performed_by=${encodeURIComponent(username)}`, { method: 'POST' });
+        if (!resp.ok) throw new Error('Revert failed');
+        // After revert, load the version content and update editor and notify via WebSocket
+        const verResp = await fetch(`/version_control/${encodeURIComponent(roomId)}/versions/${id}`);
+        const verData = await verResp.json();
+        const content = verData.version.content || '';
+        // Update editor content locally
+        localUpdate = true;
+        textEditor.value = content;
+        localUpdate = false;
+
+        // Broadcast update to other users
+        if (isConnected) {
+          ws.send(JSON.stringify({ type: 'text_update', content }));
+        }
+
+        alert('Reverted to version ' + id);
+        closeVersionsModal();
+      } catch (err) {
+        console.error('Revert error', err);
+        alert('Failed to revert to version');
+      }
+    });
+  });
+}
+
+if (versionsBtn) {
+  versionsBtn.addEventListener('click', () => openVersionsModal());
+}
+
+// Periodic autosave: every 5 minutes, trigger a version save.
+// TODO: Adjust autosave strategy (debounce, server-side retention policy, or client-side heuristics) later.
+const AUTOSAVE_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+let autosaveTimer = setInterval(() => {
+  if (!isConnected) return;
+  try {
+    ws.send(JSON.stringify({ type: 'save_version', content: textEditor.value, summary: 'Autosave (5min)' }));
+    console.log('Autosave triggered');
+  } catch (err) {
+    console.error('Autosave error:', err);
+  }
+}, AUTOSAVE_INTERVAL_MS);
 
 // Export button
 if (exportBtn && textEditor) {

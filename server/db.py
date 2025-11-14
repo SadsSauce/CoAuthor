@@ -21,6 +21,21 @@ CREATE TABLE IF NOT EXISTS documents (
 )
 """)
 
+# Versions table: store snapshots of a document over time
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS versions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    room_name TEXT NOT NULL,
+    content TEXT DEFAULT '',
+    yjs_state BLOB,
+    author TEXT,
+    summary TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    source_version INTEGER,
+    FOREIGN KEY (room_name) REFERENCES rooms(id)
+)
+""")
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS rooms (
     id TEXT PRIMARY KEY,
@@ -90,7 +105,14 @@ def get_document(room_name):
         return {"content": row[0], "yjs_state": row[1]}
     return None
 
-def save_document(room_name, content, yjs_state=None):
+def save_document(room_name, content, yjs_state=None, create_version=False, author=None, summary=None):
+    """Save document and optionally create a version snapshot.
+
+    If create_version is True, a new row in `versions` will be created for this content.
+    """
+    if create_version:
+        create_version_entry(room_name, content, author=author, summary=summary, yjs_state=yjs_state)
+
     cursor.execute("""
         INSERT INTO documents (room_name, content, yjs_state, last_updated)
         VALUES (?, ?, ?, ?)
@@ -105,6 +127,81 @@ def create_room_document(room_name):
     """Initialize a document for a new room if it doesn't exist"""
     if not get_document(room_name):
         save_document(room_name, "", None)
+
+
+def create_version_entry(room_name, content, author=None, summary=None, yjs_state=None, source_version=None):
+    """Create a version snapshot for a document.
+
+    Returns the new version id.
+    """
+    cursor.execute("""
+        INSERT INTO versions (room_name, content, yjs_state, author, summary, created_at, source_version)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (room_name, content, yjs_state, author, summary, datetime.now(), source_version))
+    conn.commit()
+    return cursor.lastrowid
+
+
+def list_versions(room_name, limit=100):
+    temp_cursor = conn.cursor()
+    temp_cursor.execute("""
+        SELECT id, room_name, author, summary, created_at, source_version
+        FROM versions
+        WHERE room_name = ?
+        ORDER BY created_at DESC
+        LIMIT ?
+    """, (room_name, limit))
+    rows = temp_cursor.fetchall()
+    temp_cursor.close()
+    return [
+        {"id": row[0], "room_name": row[1], "author": row[2], "summary": row[3], "created_at": row[4], "source_version": row[5]}
+        for row in rows
+    ]
+
+
+def get_version(version_id):
+    cursor.execute("""
+        SELECT id, room_name, content, yjs_state, author, summary, created_at, source_version
+        FROM versions
+        WHERE id = ?
+    """, (version_id,))
+    row = cursor.fetchone()
+    if not row:
+        return None
+    return {
+        "id": row[0],
+        "room_name": row[1],
+        "content": row[2],
+        "yjs_state": row[3],
+        "author": row[4],
+        "summary": row[5],
+        "created_at": row[6],
+        "source_version": row[7]
+    }
+
+
+def revert_to_version(version_id, performed_by=None):
+    """Revert the document to the specified version id.
+
+    This creates a new version entry recording the revert action and updates the documents table.
+    Returns True on success, False on failure.
+    """
+    v = get_version(version_id)
+    if not v:
+        return False
+
+    # create a version entry that records the revert (store previous content as a snapshot)
+    # first, get current document to snapshot
+    current = get_document(v["room_name"]) or {"content": "", "yjs_state": None}
+    snapshot_id = create_version_entry(v["room_name"], current["content"], author=performed_by, summary=f"Snapshot before revert to version {version_id}", yjs_state=current.get("yjs_state"))
+
+    # now update the documents table to the selected version content
+    save_document(v["room_name"], v["content"], v.get("yjs_state"), create_version=False)
+
+    # record the revert as a new version
+    revert_summary = f"Reverted to version {version_id} by {performed_by}" if performed_by else f"Reverted to version {version_id}"
+    create_version_entry(v["room_name"], v["content"], author=performed_by, summary=revert_summary, yjs_state=v.get("yjs_state"), source_version=version_id)
+    return True
 
 # Room management functions
 def create_room(room_id, name, description, genre, creator, max_members, privacy="public"):

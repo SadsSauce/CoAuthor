@@ -356,6 +356,7 @@ main {
     flex: none;
     min-height: 300px;
   }
+<<<<<<< Updated upstream
 
   .toolbar {
     gap: 8px;
@@ -377,3 +378,37 @@ main {
     font-size: 11px;
   }
 }
+=======
+}
+
+/* Versions modal styles */
+.versions-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 2000;
+}
+.versions-panel {
+  width: min(900px, 95%);
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  overflow: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.versions-header { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.versions-list { margin-top:12px; display:flex; flex-direction:column; gap:10px; }
+.version-item { padding:10px; border:1px solid #eee; border-radius:6px; background:#fafafa; }
+.version-item .meta { font-size:13px; color:#333; margin-bottom:6px }
+.version-item .summary { font-size:14px; color:#555; margin-bottom:8px }
+.version-item .actions button { margin-right:8px; padding:6px 10px; border-radius:5px; border:none; cursor:pointer }
+.version-item .actions .preview-btn { background:#2196f3; color:white }
+.version-item .actions .restore-btn { background:#f44336; color:white }
+.versions-preview { margin-top:12px; }
+.versions-preview .preview-text { width:100%; height:240px; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:monospace }
+.versions-panel .empty { color:#666; padding:10px }
+>>>>>>> Stashed changes
