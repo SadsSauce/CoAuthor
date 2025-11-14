@@ -8,7 +8,7 @@ from db import (
     add_room_member, is_room_member, get_room_member_count
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 @router.get("/genres")
 def get_genres():

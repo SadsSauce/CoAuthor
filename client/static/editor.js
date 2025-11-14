@@ -264,6 +264,15 @@ if (backBtn) {
   });
 }
 
+// Logo link navigation to genres
+const logoLink = document.querySelector(".logo-link");
+if (logoLink) {
+  logoLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    window.location.href = "/genres";
+  });
+}
+
 // Initialize WebSocket connection
 connectWebSocket();
 

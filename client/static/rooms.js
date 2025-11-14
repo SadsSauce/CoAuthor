@@ -10,6 +10,11 @@ let currentGenre = genreId;
 let currentFilter = filterParam;
 let currentSort = 'recent';
 
+// Apply genre-specific background
+if (genreId) {
+  document.body.setAttribute('data-genre', genreId);
+}
+
 // DOM Elements
 const roomsContainer = document.getElementById("roomsContainer");
 const emptyState = document.getElementById("emptyState");
@@ -25,48 +30,81 @@ const sortSelect = document.getElementById("sortBy");
 async function loadRoomOptions() {
   try {
     // Load genres
-    const genresResponse = await fetch("/genres");
+    console.log("Loading genres from /api/genres");
+    const genresResponse = await fetch("/api/genres");
+    
+    if (!genresResponse.ok) {
+      throw new Error(`HTTP error! status: ${genresResponse.status}`);
+    }
+    
     const genresData = await genresResponse.json();
+    console.log("Genres data received:", genresData);
     
     const genreSelect = document.getElementById("roomGenre");
+    if (!genreSelect) {
+      console.error("roomGenre select element not found!");
+      return;
+    }
+    
     genreSelect.innerHTML = '<option value="">Select Genre *</option>';
-    genresData.genres.forEach(genre => {
-      const option = document.createElement("option");
-      option.value = genre.id;
-      option.textContent = `${genre.icon} ${genre.name}`;
-      if (genre.id === currentGenre) {
-        option.selected = true;
-      }
-      genreSelect.appendChild(option);
-    });
+    
+    if (genresData && genresData.genres) {
+      genresData.genres.forEach(genre => {
+        const option = document.createElement("option");
+        option.value = genre.id;
+        option.textContent = `${genre.icon} ${genre.name}`;
+        if (genre.id === currentGenre) {
+          option.selected = true;
+        }
+        genreSelect.appendChild(option);
+      });
+      console.log(`Loaded ${genresData.genres.length} genres into dropdown`);
+    }
     
     // Set current genre name
     const currentGenreObj = genresData.genres.find(g => g.id === currentGenre);
-    if (currentGenreObj) {
+    if (currentGenreObj && currentGenreSpan) {
       currentGenreSpan.textContent = currentGenreObj.name;
     }
     
     // Load room sizes
-    const sizesResponse = await fetch("/room-sizes");
+    console.log("Loading room sizes from /api/room-sizes");
+    const sizesResponse = await fetch("/api/room-sizes");
+    
+    if (!sizesResponse.ok) {
+      throw new Error(`HTTP error! status: ${sizesResponse.status}`);
+    }
+    
     const sizesData = await sizesResponse.json();
+    console.log("Room sizes data received:", sizesData);
     
     const sizeSelect = document.getElementById("roomSize");
+    if (!sizeSelect) {
+      console.error("roomSize select element not found!");
+      return;
+    }
+    
     sizeSelect.innerHTML = '<option value="">Max Collaborators *</option>';
-    sizesData.sizes.forEach(size => {
-      const option = document.createElement("option");
-      option.value = size.value;
-      option.textContent = size.label;
-      sizeSelect.appendChild(option);
-    });
+    
+    if (sizesData && sizesData.sizes) {
+      sizesData.sizes.forEach(size => {
+        const option = document.createElement("option");
+        option.value = size.value;
+        option.textContent = size.label;
+        sizeSelect.appendChild(option);
+      });
+      console.log(`Loaded ${sizesData.sizes.length} room sizes into dropdown`);
+    }
   } catch (error) {
     console.error("Failed to load options:", error);
+    alert("Failed to load form options. Please refresh the page.");
   }
 }
 
 // Load rooms
 async function loadRooms() {
   try {
-    let url = `/rooms/genre/${currentGenre}?sort=${currentSort}`;
+    let url = `/api/rooms/genre/${currentGenre}?sort=${currentSort}`;
     
     if (currentFilter === 'my' && currentUser) {
       url += `&filter_type=my&username=${encodeURIComponent(currentUser)}`;
@@ -142,7 +180,7 @@ async function joinRoom(roomId, roomName) {
   }
   
   try {
-    const response = await fetch(`/rooms/${roomId}/join`, {
+    const response = await fetch(`/api/rooms/${roomId}/join`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: currentUser })
@@ -238,7 +276,7 @@ createRoomForm.addEventListener("submit", async (e) => {
   }
   
   try {
-    const response = await fetch("/rooms", {
+    const response = await fetch("/api/rooms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -280,6 +318,24 @@ loginBtn.addEventListener("click", () => {
   alert("Logged out successfully!");
   window.location.href = "/genres";
 });
+
+// Back to Genres navigation
+const backToGenresLink = document.getElementById("backToGenres");
+if (backToGenresLink) {
+  backToGenresLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    window.location.href = "/genres";
+  });
+}
+
+// Logo link navigation
+const logoLink = document.querySelector(".logo-link");
+if (logoLink) {
+  logoLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    window.location.href = "/genres";
+  });
+}
 
 // Initialize
 if (!genreId) {
