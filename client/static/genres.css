@@ -5,65 +5,80 @@
 }
 
 body {
-  margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background-color: #f5f5f9;
-  color: #222;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #2a2a4a 0%, #1a1a2e 100%);
+  background-attachment: fixed;
+  color: #1a202c;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
 header {
-  background-color: #303f9f;
-  color: white;
-  padding: 15px 40px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  color: #1a202c;
+  padding: 20px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .logo-link {
   text-decoration: none;
   color: inherit;
-  transition: opacity 0.2s;
+  transition: transform 0.2s ease;
+  display: block;
 }
 
 .logo-link:hover {
-  opacity: 0.9;
+  transform: scale(1.02);
 }
 
 header h1 {
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 28px;
-  color: white;
+  color: #1a202c;
+  letter-spacing: -0.5px;
 }
 
 #headerButtons {
   display: flex;
-  gap: 15px;
+  gap: 12px;
+  align-items: center;
 }
 
 #headerButtons button {
-  background-color: #3f51b5;
+  background: rgba(26, 32, 44, 0.85);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 10px 20px;
+  border-radius: 10px;
+  padding: 11px 22px;
   cursor: pointer;
-  font-size: 15px;
-  transition: background-color 0.3s;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 #headerButtons button:hover {
-  background-color: #5c6bc0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  background: rgba(26, 32, 44, 1);
+}
+
+#headerButtons button:active {
+  transform: translateY(0);
 }
 
 main {
   flex: 1;
-  padding: 40px 20px;
+  padding: 48px 40px;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
@@ -71,70 +86,110 @@ main {
 
 .welcome-section {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 56px;
 }
 
 .welcome-section h2 {
-  color: #303f9f;
-  font-size: 36px;
-  margin-bottom: 15px;
+  color: #ffffff;
+  font-size: 46px;
+  margin-bottom: 14px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
 }
 
 .welcome-section p {
-  color: #666;
-  font-size: 18px;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 19px;
+  font-weight: 400;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .genres-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 26px;
   margin-top: 40px;
 }
 
 .genre-card {
-  background: white;
-  border-radius: 12px;
-  padding: 30px 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  border-radius: 16px;
+  padding: 36px 24px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   color: inherit;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.genre-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.genre-card:hover::before {
+  opacity: 1;
 }
 
 .genre-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.98);
 }
 
 .genre-icon {
-  font-size: 60px;
-  margin-bottom: 15px;
+  font-size: 68px;
+  margin-bottom: 18px;
+  transition: transform 0.3s ease;
+  display: inline-block;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+}
+
+.genre-card:hover .genre-icon {
+  transform: scale(1.15) rotate(5deg);
 }
 
 .genre-name {
-  font-size: 24px;
-  font-weight: 600;
-  color: #303f9f;
+  font-size: 23px;
+  font-weight: 700;
+  color: #1a202c;
   margin-bottom: 10px;
+  letter-spacing: -0.4px;
 }
 
 .genre-count {
-  font-size: 16px;
-  color: #888;
+  font-size: 14px;
+  color: #718096;
+  font-weight: 600;
+  background: #f7fafc;
+  padding: 6px 14px;
+  border-radius: 20px;
+  display: inline-block;
 }
 
 footer {
-  background-color: #303f9f;
-  color: white;
-  padding: 20px 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  color: #6B7280;
+  padding: 24px 0;
   text-align: center;
   font-size: 14px;
-  letter-spacing: 0.5px;
   margin-top: auto;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  font-weight: 500;
 }
 
 /* Modal Styles */
@@ -147,94 +202,142 @@ footer {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
-  background-color: #fff;
-  margin: 10% auto;
-  padding: 30px;
-  border-radius: 8px;
-  width: 400px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  margin: 8% auto;
+  padding: 36px;
+  border-radius: 20px;
+  width: 440px;
   max-width: 90%;
   text-align: center;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 }
 
 .modal-content h2 {
-  margin-bottom: 20px;
-  color: #303f9f;
+  margin-bottom: 28px;
+  color: #1a202c;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .modal-content h3 {
-  margin-top: 25px;
-  margin-bottom: 10px;
-  color: #666;
-  font-size: 16px;
+  margin-top: 28px;
+  margin-bottom: 14px;
+  color: #718096;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .close {
   position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 28px;
-  font-weight: bold;
+  top: 16px;
+  right: 18px;
+  font-size: 30px;
+  font-weight: 300;
   cursor: pointer;
-  color: #888;
+  color: #9CA3AF;
+  transition: all 0.2s ease;
+  line-height: 1;
 }
 
 .close:hover {
-  color: #333;
+  color: #1a202c;
+  transform: rotate(90deg);
 }
 
 .modal-content input {
-  width: 80%;
-  padding: 10px;
-  margin: 10px 0;
-  font-size: 16px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  width: 85%;
+  padding: 13px 18px;
+  margin: 12px 0;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 2px solid #E5E7EB;
   outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  background: white;
+}
+
+.modal-content input:focus {
+  border-color: rgba(26, 32, 44, 0.5);
+  box-shadow: 0 0 0 4px rgba(26, 32, 44, 0.1);
 }
 
 .modal-content button {
-  background-color: #3f51b5;
+  background: rgba(26, 32, 44, 0.85);
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 13px 28px;
   font-size: 15px;
-  border-radius: 5px;
+  font-weight: 600;
+  border-radius: 10px;
   cursor: pointer;
-  margin: 10px 0;
-  transition: background-color 0.2s;
-  width: 80%;
+  margin: 12px 0;
+  transition: all 0.3s ease;
+  width: 85%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .modal-content button:hover {
-  background-color: #5c6bc0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  background: rgba(26, 32, 44, 1);
+}
+
+.modal-content button:active {
+  transform: translateY(0);
 }
 
 @media (max-width: 768px) {
-  .genres-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
+  header {
+    padding: 16px 24px;
   }
 
-  .genre-card {
-    padding: 20px 15px;
+  header h1 {
+    font-size: 22px;
   }
 
-  .genre-icon {
-    font-size: 40px;
-  }
-
-  .genre-name {
-    font-size: 18px;
+  main {
+    padding: 36px 24px;
   }
 
   .welcome-section h2 {
-    font-size: 28px;
+    font-size: 34px;
+  }
+
+  .welcome-section p {
+    font-size: 17px;
+  }
+
+  .genres-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 18px;
+  }
+
+  .genre-card {
+    padding: 28px 18px;
+  }
+
+  .genre-icon {
+    font-size: 52px;
+  }
+
+  .genre-name {
+    font-size: 19px;
+  }
+
+  #headerButtons {
+    gap: 8px;
+  }
+
+  #headerButtons button {
+    padding: 9px 16px;
+    font-size: 13px;
   }
 }
-
