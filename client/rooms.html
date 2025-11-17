@@ -41,7 +41,6 @@
     </div>
 
     <div id="roomsContainer" class="rooms-grid">
-      <!-- Room cards will be loaded here -->
     </div>
 
     <div id="emptyState" class="empty-state" style="display: none;">
@@ -78,6 +77,10 @@
             <input type="radio" name="privacy" value="private">
             Private (Invite only)
           </label>
+        </div>
+        <div id="roomPasswordContainer" style="display:none; margin-top:8px;">
+          <input type="password" id="roomPassword" placeholder="Password (required for private)" />
+          <p class="help-text">Set a password so only invitees or those with the password can join.</p>
         </div>
         
         <button type="submit" id="confirmCreateRoom">Create Story</button>

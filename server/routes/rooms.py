@@ -1,51 +1,69 @@
 from fastapi import APIRouter, Body, HTTPException, Query
 from typing import Optional
 import uuid
+from pydantic import BaseModel
+
 from db import (
-    GENRES, ROOM_SIZES,
-    create_room, get_room, get_rooms_by_genre,
-    get_user_rooms, get_genre_room_counts,
-    add_room_member, is_room_member, get_room_member_count
+    GENRES,
+    ROOM_SIZES,
+    create_room,
+    get_room,
+    get_rooms_by_genre,
+    get_user_rooms,
+    get_genre_room_counts,
+    add_room_member,
+    is_room_member,
+    get_room_member_count,
+    check_password,
 )
 
 router = APIRouter(prefix="/api")
 
+
+class JoinRoomRequest(BaseModel):
+    username: str
+    password: Optional[str] = None
+
+
 @router.get("/genres")
 def get_genres():
-    """Get all available genres with room counts"""
     counts = get_genre_room_counts()
-    genres_with_counts = []
-    for genre in GENRES:
-        genres_with_counts.append({
-            **genre,
-            "room_count": counts.get(genre["id"], 0)
-        })
-    return {"genres": genres_with_counts}
+    out = []
+    for g in GENRES:
+        out.append(
+            {
+                "id": g["id"],
+                "name": g["name"],
+                "icon": g["icon"],
+                "room_count": counts.get(g["id"], 0),
+            }
+        )
+    return {"genres": out}
+
 
 @router.get("/room-sizes")
 def get_room_sizes():
-    """Get available room size options"""
     return {"sizes": ROOM_SIZES}
+
 
 @router.get("/rooms/genre/{genre_id}")
 def get_rooms_in_genre(
     genre_id: str,
     sort: str = Query("recent", regex="^(recent|active|popular)$"),
     filter_type: str = Query("all", regex="^(all|my)$"),
-    username: Optional[str] = Query(None)
+    username: Optional[str] = Query(None),
 ):
-    """Get all rooms in a specific genre"""
     if filter_type == "my" and not username:
-        raise HTTPException(status_code=400, detail="Username required for 'my rooms' filter")
-    
+        raise HTTPException(status_code=400, detail="Username required")
+
     if filter_type == "my":
-        # Get user's rooms filtered by genre
-        all_user_rooms = get_user_rooms(username)
-        rooms = [r for r in all_user_rooms if r["genre"] == genre_id]
+        all_rooms = get_user_rooms(username)
+        rooms = [r for r in all_rooms if r["genre"] == genre_id]
     else:
         rooms = get_rooms_by_genre(genre_id, sort)
-    
+
     return {"rooms": rooms}
+
 
 @router.post("/rooms")
 def create_new_room(
@@ -54,71 +72,72 @@ def create_new_room(
     genre: str = Body(...),
     max_members: int = Body(...),
     privacy: str = Body("public"),
-    creator: str = Body(...)
+    creator: str = Body(...),
+    password: Optional[str] = Body(None),
 ):
-    """Create a new room/story"""
-    # Validate genre
     valid_genres = [g["id"] for g in GENRES]
     if genre not in valid_genres:
         raise HTTPException(status_code=400, detail="Invalid genre")
-    
-    # Validate room size
+
     valid_sizes = [s["value"] for s in ROOM_SIZES]
     if max_members not in valid_sizes:
         raise HTTPException(status_code=400, detail="Invalid room size")
-    
-    # Generate unique room ID
+
+    if privacy == "private" and not password:
+        raise HTTPException(status_code=400, detail="Password required")
+
     room_id = str(uuid.uuid4())
-    
-    # Create room
-    success = create_room(room_id, name, description, genre, creator, max_members, privacy)
-    
-    if success:
-        return {
-            "success": True,
-            "message": "Room created successfully",
-            "room_id": room_id
-        }
-    else:
+    ok = create_room(room_id, name, description, genre, creator, max_members, privacy, password)
+
+    if not ok:
         raise HTTPException(status_code=500, detail="Failed to create room")
+
+    return {"success": True, "room_id": room_id}
+
 
 @router.get("/rooms/{room_id}")
 def get_room_details(room_id: str):
-    """Get details of a specific room"""
     room = get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
-    
-    member_count = get_room_member_count(room_id)
-    room["member_count"] = member_count
-    
+    room["member_count"] = get_room_member_count(room_id)
     return room
 
+
 @router.post("/rooms/{room_id}/join")
-def join_room(room_id: str, username: str = Body(..., embed=True)):
-    """Join a room"""
+def join_room(room_id: str, payload: JoinRoomRequest):
+    username = payload.username
+    password = payload.password
+
     room = get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
-    
-    # Check if already a member
+
     if is_room_member(room_id, username):
-        return {"message": "Already a member of this room"}
-    
-    # Check if room is full
-    member_count = get_room_member_count(room_id)
-    if member_count >= room["max_members"]:
+        return {"success": True, "message": "Already a member"}
+
+    if username == room["creator"]:
+        add_room_member(room_id, username)
+        return {"success": True, "message": "Joined as owner"}
+
+    if get_room_member_count(room_id) >= room["max_members"]:
         raise HTTPException(status_code=400, detail="Room is full")
-    
-    # Add user to room
-    success = add_room_member(room_id, username)
-    if success:
-        return {"success": True, "message": "Successfully joined room"}
-    else:
+
+    if room["privacy"] == "private":
+        if not password:
+            raise HTTPException(status_code=401, detail="Password required")
+        if not room["password"]:
+            raise HTTPException(status_code=500, detail="Room has no password set")
+        if not check_password(password, room["password"]):
+            raise HTTPException(status_code=403, detail="Incorrect password")
+
+    ok = add_room_member(room_id, username)
+    if not ok:
         raise HTTPException(status_code=500, detail="Failed to join room")
+
+    return {"success": True, "message": "Joined room"}
+
 
 @router.get("/users/{username}/rooms")
 def get_my_rooms(username: str):
-    """Get all rooms a user is a member of"""
-    rooms = get_user_rooms(username)
-    return {"rooms": rooms}
+    return {"rooms": get_user_rooms(username)}
