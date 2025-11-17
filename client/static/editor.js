@@ -144,7 +144,7 @@ let updateTimeout = null;
 function sendTextUpdate() {
   if (!isConnected || localUpdate) return;
   
-  // Debounce updates to avoid flooding the server
+  // Debounce updates to avoid flooding the server (250ms)
   clearTimeout(updateTimeout);
   updateTimeout = setTimeout(() => {
     ws.send(JSON.stringify({
@@ -154,7 +154,7 @@ function sendTextUpdate() {
         // Could include diff information here
       }
     }));
-  }, 300);
+  }, 250);
 }
 
 // Send cursor updates
