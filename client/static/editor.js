@@ -364,18 +364,15 @@ let autosaveTimer = setInterval(() => {
   }
 }, AUTOSAVE_INTERVAL_MS);
 
-// Export button
+
 if (exportBtn && textEditor) {
   exportBtn.addEventListener("click", () => {
-    const blob = new Blob([textEditor.value], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${roomName || "story"}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const text = textEditor.value;
+    const lines = doc.splitTextToSize(text, 180); 
+    doc.text(lines, 10, 10);
+    doc.save(`${roomTitle.textContent || "story"}.pdf`);
   });
 }
 
