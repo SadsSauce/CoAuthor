@@ -1,12 +1,12 @@
 console.log("Genres.js loaded - version 2.0");
 
-// Auth state
+
 let currentUser = localStorage.getItem("username");
 
-// DOM Elements
+
 let genresContainer, loginBtn, myRoomsBtn, loginModal, closeLoginModal;
 
-// Wait for DOM to be ready
+
 function initDOM() {
   genresContainer = document.getElementById("genresContainer");
   loginBtn = document.getElementById("loginBtn");
@@ -21,7 +21,7 @@ function initDOM() {
   return true;
 }
 
-// Load genres on page load
+
 async function loadGenres() {
   if (!genresContainer) {
     console.error("genresContainer not available");
@@ -73,7 +73,7 @@ async function loadGenres() {
   }
 }
 
-// Auth UI functions
+
 function updateAuthUI() {
   if (!loginBtn || !myRoomsBtn) return;
   currentUser = localStorage.getItem("username");
@@ -96,25 +96,22 @@ function closeLogin() {
   if (loginModal) loginModal.style.display = "none";
 }
 
-// Setup event listeners
+
 function setupEventListeners() {
-  // Login button click
   if (loginBtn) {
     loginBtn.addEventListener("click", () => {
       if (currentUser) {
-        // Logout
         localStorage.removeItem("username");
         localStorage.removeItem("activeRoom");
         updateAuthUI();
         alert("Logged out successfully!");
       } else {
-        // Open login modal
         openLoginModal();
       }
     });
   }
 
-  // My Rooms button click
+
   if (myRoomsBtn) {
     myRoomsBtn.addEventListener("click", () => {
       if (currentUser) {
@@ -126,7 +123,7 @@ function setupEventListeners() {
     });
   }
 
-  // Close modal
+
   if (closeLoginModal) {
     closeLoginModal.addEventListener("click", closeLogin);
   }
@@ -136,7 +133,7 @@ function setupEventListeners() {
     }
   });
 
-  // Login form submit
+
   const loginSubmitBtn = document.getElementById("loginSubmitBtn");
   if (loginSubmitBtn) {
     loginSubmitBtn.addEventListener("click", async () => {
@@ -160,7 +157,7 @@ function setupEventListeners() {
           updateAuthUI();
           closeLogin();
           alert("Login successful!");
-          loadGenres(); // Reload to show updated counts
+          loadGenres(); 
         } else {
           const error = await response.json();
           alert(error.detail || "Login failed");
@@ -172,7 +169,7 @@ function setupEventListeners() {
     });
   }
 
-  // Create account form submit
+
   const createAccountSubmitBtn = document.getElementById("createAccountSubmitBtn");
   if (createAccountSubmitBtn) {
     createAccountSubmitBtn.addEventListener("click", async () => {
@@ -206,7 +203,7 @@ function setupEventListeners() {
           updateAuthUI();
           closeLogin();
           alert("Account created successfully!");
-          loadGenres(); // Reload to show updated counts
+          loadGenres(); 
         } else {
           const error = await response.json();
           alert(error.detail || "Error creating account");
@@ -219,7 +216,7 @@ function setupEventListeners() {
   }
 }
 
-// Initialize page when DOM is ready
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     if (initDOM()) {
@@ -229,7 +226,7 @@ if (document.readyState === 'loading') {
     }
   });
 } else {
-  // DOM is already ready
+
   if (initDOM()) {
     setupEventListeners();
     updateAuthUI();

@@ -356,8 +356,6 @@ main {
     flex: none;
     min-height: 300px;
   }
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 
   .toolbar {
     gap: 8px;
@@ -379,12 +377,7 @@ main {
     font-size: 11px;
   }
 }
-=======
-=======
->>>>>>> Stashed changes
-}
 
-/* Versions modal styles */
 .versions-modal {
   position: fixed;
   inset: 0;
@@ -414,7 +407,3 @@ main {
 .versions-preview { margin-top:12px; }
 .versions-preview .preview-text { width:100%; height:240px; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:monospace }
 .versions-panel .empty { color:#666; padding:10px }
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes

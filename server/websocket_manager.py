@@ -5,11 +5,11 @@ from db import get_document, save_document, update_room_activity
 
 class ConnectionManager:
     def __init__(self):
-        # Room-based connections: {room_name: {username: websocket}}
+        
         self.active_connections: Dict[str, Dict[str, WebSocket]] = {}
-        # Track user awareness data: {room_name: {username: {cursor, selection, color}}}
+        
         self.user_awareness: Dict[str, Dict[str, dict]] = {}
-        # Assign colors to users
+       
         self.user_colors = [
             "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8",
             "#F7DC6F", "#BB8FCE", "#85C1E2", "#F8B739", "#52B788"
@@ -34,7 +34,6 @@ class ConnectionManager:
         
         self.active_connections[room_name][username] = websocket
         
-        # Initialize user awareness with color
         color = self.get_user_color(room_name, username)
         self.user_awareness[room_name][username] = {
             "username": username,
@@ -43,7 +42,6 @@ class ConnectionManager:
             "selection": None
         }
         
-        # Send initial document state to the connecting user
         doc = get_document(room_name)
         if doc:
             await websocket.send_json({
@@ -58,7 +56,7 @@ class ConnectionManager:
                 "users": await self.get_room_users(room_name)
             })
         
-        # Notify others that a user joined
+
         await self.broadcast_to_room(room_name, {
             "type": "user_joined",
             "username": username,
@@ -73,7 +71,7 @@ class ConnectionManager:
             if username in self.user_awareness[room_name]:
                 del self.user_awareness[room_name][username]
             
-            # Clean up empty rooms
+
             if not self.active_connections[room_name]:
                 del self.active_connections[room_name]
                 if room_name in self.user_awareness:
@@ -112,18 +110,17 @@ class ConnectionManager:
         msg_type = message.get("type")
         
         if msg_type == "text_update":
-            # Broadcast text changes to all other users
+
             content = message.get("content", "")
             changes = message.get("changes", {})
             
-            # Save to database
-            # Save document (don't create a version on every text update)
+
             save_document(room_name, content)
             
-            # Update room activity
+
             update_room_activity(room_name)
             
-            # Broadcast to others
+
             await self.broadcast_to_room(room_name, {
                 "type": "text_update",
                 "username": username,
@@ -131,18 +128,16 @@ class ConnectionManager:
                 "changes": changes
             }, exclude_user=username)
         elif msg_type == "save_version":
-            # Explicit request to create a version snapshot (e.g. user pressed "Save version")
             content = message.get("content")
             summary = message.get("summary")
-            # If content not provided, use current document
             if content is None:
                 doc = get_document(room_name) or {"content": "", "yjs_state": None}
                 content = doc.get("content", "")
 
-            # Create a version entry and persist current content
+
             save_document(room_name, content, create_version=True, author=username, summary=summary)
 
-            # Notify room about new version
+
             await self.broadcast_to_room(room_name, {
                 "type": "version_saved",
                 "username": username,
@@ -151,7 +146,6 @@ class ConnectionManager:
             })
         
         elif msg_type == "cursor_update":
-            # Update cursor position in awareness
             cursor_pos = message.get("cursor")
             selection = message.get("selection")
             
@@ -159,7 +153,7 @@ class ConnectionManager:
                 self.user_awareness[room_name][username]["cursor"] = cursor_pos
                 self.user_awareness[room_name][username]["selection"] = selection
             
-            # Broadcast cursor update to others
+
             await self.broadcast_to_room(room_name, {
                 "type": "cursor_update",
                 "username": username,
@@ -169,7 +163,7 @@ class ConnectionManager:
             }, exclude_user=username)
         
         elif msg_type == "chat_message":
-            # Broadcast chat message to everyone including sender
+
             chat_msg = message.get("message", "")
             await self.broadcast_to_room(room_name, {
                 "type": "chat_message",

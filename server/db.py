@@ -86,9 +86,9 @@ ROOM_SIZES = [
 ]
 
 
-# -----------------------------
+
 # PASSWORD HELPERS
-# -----------------------------
+
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
@@ -97,9 +97,9 @@ def check_password(password: str, hashed: str) -> bool:
     return bcrypt.checkpw(password.encode(), hashed.encode())
 
 
-# -----------------------------
+
 # USER FUNCTIONS
-# -----------------------------
+
 def get_user(username):
     cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
     row = cursor.fetchone()
@@ -113,9 +113,9 @@ def create_user(username, password):
     conn.commit()
 
 
-# -----------------------------
+
 # DOCUMENTS
-# -----------------------------
+
 def get_document(room_name):
     cursor.execute("SELECT content, yjs_state FROM documents WHERE room_name = ?", (room_name,))
     row = cursor.fetchone()
@@ -144,9 +144,9 @@ def create_room_document(room_name):
         save_document(room_name, "", None)
 
 
-# -----------------------------
+
 # VERSIONING
-# -----------------------------
+
 def create_version_entry(room_name, content, author=None, summary=None, yjs_state=None, source_version=None):
     cursor.execute("""
         INSERT INTO versions (room_name, content, yjs_state, author, summary, created_at, source_version)
@@ -229,9 +229,7 @@ def revert_to_version(version_id, performed_by=None):
     return True
 
 
-# -----------------------------
 # ROOMS + MEMBERSHIP
-# -----------------------------
 def create_room(room_id, name, description, genre, creator, max_members, privacy="public", password=None):
     try:
         hashed_pw = hash_password(password) if privacy == "private" and password else None

@@ -25,9 +25,9 @@ const versionsModal = document.getElementById("versionsModal");
 // WebSocket connection
 let ws = null;
 let isConnected = false;
-let localUpdate = false; // Flag to prevent echo when receiving own updates
+let localUpdate = false; 
 
-// Connect to WebSocket
+
 function connectWebSocket() {
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const wsUrl = `${protocol}//${window.location.host}/ws/${encodeURIComponent(roomId)}/${encodeURIComponent(username)}`;
@@ -51,16 +51,13 @@ function connectWebSocket() {
   ws.onclose = () => {
     console.log("WebSocket disconnected");
     isConnected = false;
-    // Attempt to reconnect after 3 seconds
     setTimeout(connectWebSocket, 3000);
   };
 }
 
-// Handle incoming WebSocket messages
 function handleWebSocketMessage(data) {
   switch(data.type) {
     case 'init':
-      // Initial document content
       localUpdate = true;
       textEditor.value = data.content || "";
       localUpdate = false;
@@ -68,7 +65,6 @@ function handleWebSocketMessage(data) {
       break;
       
     case 'text_update':
-      // Another user updated the text
       if (data.username !== username) {
         localUpdate = true;
         textEditor.value = data.content;
@@ -91,7 +87,6 @@ function handleWebSocketMessage(data) {
       break;
       
     case 'cursor_update':
-      // Handle remote cursor updates (will implement cursor rendering)
       updateRemoteCursor(data.username, data.cursor, data.selection, data.color);
       break;
       
@@ -101,7 +96,6 @@ function handleWebSocketMessage(data) {
   }
 }
 
-// Update active users display
 function updateActiveUsers(users) {
   activeUsersContainer.innerHTML = "";
   
@@ -111,7 +105,6 @@ function updateActiveUsers(users) {
     avatar.style.backgroundColor = user.color || "#888888";
     avatar.setAttribute("data-username", user.username);
     
-    // Get initials from username
     const initials = user.username
       .split(' ')
       .map(word => word[0])
@@ -124,17 +117,12 @@ function updateActiveUsers(users) {
   });
 }
 
-// Update remote cursor position
+
 const remoteCursors = {};
 
 function updateRemoteCursor(username, cursorPos, selection, color) {
   if (!cursorPos) return;
   
-  // For now, we'll show a simple indicator that someone is typing
-  // Full cursor positioning would require more complex calculations
-  // based on textarea coordinates
-  
-  // Store the cursor data for this user
   remoteCursors[username] = { cursorPos, selection, color };
 }
 
@@ -144,14 +132,13 @@ let updateTimeout = null;
 function sendTextUpdate() {
   if (!isConnected || localUpdate) return;
   
-  // Debounce updates to avoid flooding the server (250ms)
   clearTimeout(updateTimeout);
   updateTimeout = setTimeout(() => {
     ws.send(JSON.stringify({
       type: 'text_update',
       content: textEditor.value,
       changes: {
-        // Could include diff information here
+
       }
     }));
   }, 250);
@@ -202,7 +189,6 @@ if (chatInput && chatBox) {
     if (e.key === "Enter" && chatInput.value.trim()) {
       const message = chatInput.value.trim();
       
-      // Send chat message via WebSocket
       if (isConnected) {
         ws.send(JSON.stringify({
           type: 'chat_message',
@@ -215,7 +201,7 @@ if (chatInput && chatBox) {
   });
 }
 
-// Voice chat toggle
+
 if (joinVoice && voiceStatus) {
   let connected = false;
   joinVoice.addEventListener("click", () => {
@@ -228,7 +214,6 @@ if (joinVoice && voiceStatus) {
 // Save button
 if (saveBtn && textEditor) {
   saveBtn.addEventListener("click", () => {
-    // Trigger an explicit version save via WebSocket
     if (isConnected) {
       ws.send(JSON.stringify({
         type: 'save_version',
@@ -242,7 +227,7 @@ if (saveBtn && textEditor) {
   });
 }
 
-// Versions UI: fetch & display recent versions and allow preview/restore
+
 async function fetchVersions() {
   try {
     const resp = await fetch(`/version_control/${encodeURIComponent(roomId)}/versions`);
@@ -323,16 +308,15 @@ async function openVersionsModal() {
       try {
         const resp = await fetch(`/version_control/versions/${id}/revert?performed_by=${encodeURIComponent(username)}`, { method: 'POST' });
         if (!resp.ok) throw new Error('Revert failed');
-        // After revert, load the version content and update editor and notify via WebSocket
+
         const verResp = await fetch(`/version_control/${encodeURIComponent(roomId)}/versions/${id}`);
         const verData = await verResp.json();
         const content = verData.version.content || '';
-        // Update editor content locally
+
         localUpdate = true;
         textEditor.value = content;
         localUpdate = false;
 
-        // Broadcast update to other users
         if (isConnected) {
           ws.send(JSON.stringify({ type: 'text_update', content }));
         }
@@ -351,9 +335,9 @@ if (versionsBtn) {
   versionsBtn.addEventListener('click', () => openVersionsModal());
 }
 
-// Periodic autosave: every 5 minutes, trigger a version save.
-// TODO: Adjust autosave strategy (debounce, server-side retention policy, or client-side heuristics) later.
-const AUTOSAVE_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+
+
+const AUTOSAVE_INTERVAL_MS = 5 * 60 * 1000; 
 let autosaveTimer = setInterval(() => {
   if (!isConnected) return;
   try {
@@ -381,7 +365,6 @@ const backBtn = document.querySelector('.backBtn');
 if (backBtn) {
   backBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    // Get stored genre and navigate back to rooms list
     const storedGenre = localStorage.getItem("activeGenre");
     console.log("Back button clicked. Stored genre:", storedGenre);
     if (storedGenre) {
@@ -394,7 +377,7 @@ if (backBtn) {
   });
 }
 
-// Logo link navigation to genres
+
 const logoLink = document.querySelector(".logo-link");
 if (logoLink) {
   logoLink.addEventListener("click", (e) => {
@@ -403,10 +386,10 @@ if (logoLink) {
   });
 }
 
-// Initialize WebSocket connection
+
 connectWebSocket();
 
-// Clean up on page unload
+
 window.addEventListener("beforeunload", () => {
   if (ws && isConnected) {
     ws.close();
